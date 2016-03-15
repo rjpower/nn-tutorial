@@ -54,10 +54,13 @@ init_op = tf.initialize_all_variables()
 
 with tf.Session() as sess:
     sess.run(init_op)
+    # iterate through the training data 100 times.
     for epoch in range(100):
         print '%d %s %s' % (epoch,
                             sess.run(w4).mean(),
                             sess.run(loss, { x: X[0:BATCH_SIZE], y: Y[0:BATCH_SIZE] }))
+
+        # Update weights for every mini-batch of BATCH_SIZE examples
         for i in range(0, N, BATCH_SIZE):
             sess.run(train_op, { x: X[i:i+BATCH_SIZE], y: Y[i:i+BATCH_SIZE] })
 
