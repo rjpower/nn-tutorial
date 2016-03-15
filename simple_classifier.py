@@ -3,7 +3,7 @@
 import tensorflow as tf
 import numpy as np
 
-LEARNING_RATE = 0.1
+LEARNING_RATE = 0.01
 N = 10000
 BATCH_SIZE = 100
 DIM = 3
@@ -28,14 +28,15 @@ def activation(x):
 # A fully connected layer: activation(matrix-multiply + bias)
 def layer(name, x, num_inputs, num_outputs):
     with tf.name_scope(name) as scope:
-        weight = tf.Variable(np.random.uniform(size=(num_inputs, num_outputs)).astype(np.float32), name='weight')
-        bias = tf.Variable(0.0, name='bias')
+        weight = tf.Variable(np.random.uniform(low=-1, high=1, size=(num_inputs, num_outputs)).astype(np.float32), name='weight')
+        #weight = tf.truncated_normal((num_inputs, num_outputs), name='weight')
+        bias = tf.Variable(np.zeros(num_outputs).astype(np.float32), name='bias')
         return activation(tf.matmul(x, weight) + bias), weight, bias
 
 # slap a few layers together
-y_1, w1, b1 = layer('layer1', x, DIM, 25)
-y_2, w2, b2 = layer('layer2', y_1, 25, 25)
-y_3, w3, b3 = layer('layer3', y_2, 25, 10)
+y_1, w1, b1 = layer('layer1', x, DIM, 10)
+y_2, w2, b2 = layer('layer2', y_1, 10, 10)
+y_3, w3, b3 = layer('layer3', y_2, 10, 10)
 y_4, w4, b4 = layer('layer4', y_3, 10, 2)
 
 # convert the output of our layers to probabilities, and
@@ -55,10 +56,8 @@ init_op = tf.initialize_all_variables()
 with tf.Session() as sess:
     sess.run(init_op)
     # iterate through the training data 100 times.
-    for epoch in range(100):
-        print '%d %s %s' % (epoch,
-                            sess.run(w4).mean(),
-                            sess.run(loss, { x: X[0:BATCH_SIZE], y: Y[0:BATCH_SIZE] }))
+    for epoch in range(250):
+        print '%d %s' % (epoch, sess.run(loss, { x: X[0:BATCH_SIZE], y: Y[0:BATCH_SIZE] }))
 
         # Update weights for every mini-batch of BATCH_SIZE examples
         for i in range(0, N, BATCH_SIZE):

@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 
 # how large can our weight updates be?
-LEARNING_RATE = 0.01
+LEARNING_RATE = 0.001
 
 # size of our dataset
 N = 1000
